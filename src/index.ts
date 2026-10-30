@@ -7,10 +7,12 @@
  * plugin's own process by the template's manifest name (Tyto ADR 0048).
  */
 
+import { build as buildBanner } from './template.js';
+
 import type { TemplateBuild, TemplateContext } from '@tyto/core';
 import type { PluginHost } from '@tyto/plugin-api';
 
-const BUILDS: Readonly<Record<string, TemplateBuild>> = {};
+const BUILDS: Readonly<Record<string, TemplateBuild>> = { banner: buildBanner };
 
 export function activate(host: PluginHost): void {
   host.registerTemplatePack({

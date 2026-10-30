@@ -3,6 +3,8 @@ node_modules/
 out/
 *.png
 *.svg
+# Except the template's own backgrounds: abstract shapes, no logo, no wordmark, no copy.
+!templates/banner/assets/*.png
 .cache/
 coverage/
 # The reference art never enters this repository (it carries the brand and real copy).
