@@ -1,0 +1,5 @@
+# The sizes the example briefs render at. A pack brings templates and no formats: copy these
+# into the project that renders `banner`, or merge their lines into that project's own.
+banner: { w: 1200, h: 628, kind: banner, label: Banner }
+banner-1x1: { w: 600, h: 600, kind: banner, label: Banner 1:1 }
+banner-345x146: { w: 345, h: 146, kind: banner, label: Banner 345×146 }
