@@ -51,9 +51,10 @@ renders `banner`, or merge its three lines into the project's own.
 built-in template's name is refused and the built-in stands (ADR 0151 decision 7); it loads once
 Tyto's TYTO-436 removes the built-in folder.
 
-**The backgrounds need Tyto's TYTO-478.** An installed plugin's code template is handed no files
-from its own folder yet (Tyto ADR 0062), so until a Tyto with TYTO-478 is released the banner
-renders without its background.
+**It needs Tyto 0.12 (the desktop app) or later**, the release that hands an installed code
+template the files in its own folder (Tyto TYTO-478): the backgrounds are drawn from there. On
+that release the banner renders the same PNGs as the built-in `banner-roxo`, measured on both
+example briefs in all three formats.
 
 ## What a configuration may change
 
