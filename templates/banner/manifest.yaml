@@ -1,0 +1,19 @@
+name: banner
+version: 1.0.0
+# The look drawn when nothing configures it: roxo's, the brand the piece was drawn for. The
+# configuration `roxo` names it too (see README.md), and keeps the built-in's name as its alias.
+brand: roxo
+description: roxo's product banner — one text over a fixed background, in three sizes.
+# Every face the composition measures, so the plugin's process can measure what Tyto measured
+# in-process for the built-in (Tyto ADR 0048): the name (400) and the group in parentheses (700).
+faces:
+  - { family: CircularXX, weight: 400 }
+  - { family: CircularXX, weight: 700 }
+# One piece in three sizes. Each format draws its own background from `assets/bg-<format>.png`.
+formats: [banner, banner-1x1, banner-345x146]
+slots:
+  # The product's name, the same on every format: `Prefeitura Municipal de São Bento do
+  # Vale Alto **(VA)**`. The lines are broken by the template, balanced, with a group in
+  # parentheses kept whole and no line ending on `de` or `e`; a line break in the brief is
+  # kept. `**bold**` is the bold face.
+  titulo: { type: rich-text, required: true, max: 120 }
