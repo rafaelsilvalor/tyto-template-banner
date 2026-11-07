@@ -5,7 +5,7 @@ import { NO_SHIPPED_FILES, PLUGIN_API_VERSION, satisfiesEngine } from '@tyto/plu
 import { testPlugin } from '@tyto/plugin-api/testing';
 import { afterAll, describe, expect, it } from 'vitest';
 
-import type { TemplateCall } from '@tyto/core';
+import type { AssetRef, TemplateCall } from '@tyto/core';
 import type { IsolatedPackBuild } from '@tyto/plugin-api';
 import type { PluginHarness } from '@tyto/plugin-api/testing';
 
@@ -75,6 +75,31 @@ describe('the plugin', () => {
 
     expect(answer.value.frame.size).toEqual({ w: 1200, h: 628 });
     expect(answer.value.frame.children.some((child) => child.name === 'titulo')).toBe(true);
+  });
+
+  it('answers a missing background with W_TEMPLATE_FILE_MISSING naming the file', async () => {
+    // TYTO-605: the warning crosses the isolation protocol (15) in the answer's reports.
+    const answer = await build()('banner', call, [], NO_SHIPPED_FILES);
+    if (!answer.ok) throw new Error(answer.error.map((item) => item.message).join('\n'));
+
+    expect(answer.value.reports).toEqual([
+      { code: 'W_TEMPLATE_FILE_MISSING', path: 'assets/bg-banner.png' },
+    ]);
+  });
+
+  it('draws the background it was shipped, and reports nothing', async () => {
+    const background: AssetRef = {
+      id: 'bg-banner',
+      source: 'file',
+      path: 'assets/bg-banner.png',
+      hash: 'sha256-banner',
+    };
+    const shipped = { images: { 'assets/bg-banner.png': background }, svgs: {} };
+    const answer = await build()('banner', call, [], shipped);
+    if (!answer.ok) throw new Error(answer.error.map((item) => item.message).join('\n'));
+
+    expect(answer.value.reports).toEqual([]);
+    expect(answer.value.frame.children[0]).toMatchObject({ kind: 'image', asset: background });
   });
 
   it('refuses a template name it does not draw', async () => {
