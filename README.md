@@ -27,7 +27,7 @@ templates:
   banner:
     source:
       git: https://github.com/rafaelsilvalor/tyto-template-banner.git
-      ref: v1.0.0
+      ref: v1.1.0
     default: roxo # `template: banner` renders as `roxo`
     configurations:
       roxo:
@@ -51,10 +51,21 @@ renders `banner`, or merge its three lines into the project's own.
 built-in template's name is refused and the built-in stands (ADR 0151 decision 7); it loads once
 Tyto's TYTO-436 removes the built-in folder.
 
-**It needs Tyto 0.12 (the desktop app) or later**, the release that hands an installed code
-template the files in its own folder (Tyto TYTO-478): the backgrounds are drawn from there. On
-that release the banner renders the same PNGs as the built-in `banner-roxo`, measured on both
-example briefs in all three formats.
+**It needs a Tyto whose plugin API is 0.14 or later** (the manifest's `engine: ">=0.14"`),
+which speaks plugin protocol 15. An installed code template is handed the files in its own
+folder (Tyto TYTO-478), and the backgrounds are drawn from there; v1.0.0 measured the same PNGs
+as the built-in `banner-roxo` on both example briefs in all three formats, and v1.1.0 draws them
+byte for byte.
+
+**A missing background is reported, not drawn blank.** The banner asks for
+`assets/bg-<format>.png` through `requiredImage` (Tyto TYTO-502, TYTO-605). When the file is
+not in the folder, the format is drawn on paper with the text and the logo, and the render
+warns `W_TEMPLATE_FILE_MISSING`, naming the artwork, the file and the format:
+
+```
+Artwork 'artwork-1' is drawn without 'assets/bg-banner-1x1.png' in format 'banner-1x1':
+template 'banner' has no such file in its folder.
+```
 
 ## What a configuration may change
 
@@ -100,7 +111,8 @@ The tests, all without Tyto:
 - `src/template.test.ts`: the composition's rules on the scene, Tyto's own tests for the
   built-in moved with it — every line inside its box, the group in parentheses kept whole, no
   line ending on a function word, the floor and its overflow report, the logo and the wordmark
-  in the boxes the painted-out art took, in both purples.
+  in the boxes the painted-out art took, in both purples, and a missing background reported by
+  its path in every format.
 - `tests/examples.test.ts`: the two example briefs compiled as Tyto compiles them through
   `@tyto/template-kit/testing` (Tyto ADR 0152), against the HTML in `tests/__snapshots__/`.
   Those six files are Tyto's own snapshots of the built-in, copied byte for byte, so the test
@@ -109,7 +121,8 @@ The tests, all without Tyto:
   nothing else. A plugin's process measures only the declared faces, so a face left out would
   draw the name smaller than the built-in did.
 - `tests/plugin.test.ts`: the built `dist/index.js`, loaded through `@tyto/plugin-api/testing`
-  (Tyto ADR 0150), drawing a banner across the isolation protocol.
+  (Tyto ADR 0150), drawing a banner across the isolation protocol, with its background shipped
+  and without it, when the answer carries `W_TEMPLATE_FILE_MISSING`.
 
 **Renders made on a machine with the private brand kit carry the brand.** Never commit one:
 `.gitignore` refuses `*.png` and `*.svg`, except the three backgrounds.

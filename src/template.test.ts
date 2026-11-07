@@ -150,6 +150,7 @@ function render(
   format: string,
   measure: TemplateContext['measure'] = proportional,
   brand: BrandKit = noBrandKit,
+  files: TemplateFiles = folder,
 ): Built {
   const reports: TemplateReport[] = [];
   const frame = build({
@@ -163,7 +164,7 @@ function render(
     adjustments: {},
     measure,
     report: (report) => reports.push(report),
-    files: folder,
+    files,
     brand,
   });
   return { frame, reports };
@@ -194,6 +195,17 @@ describe.each(Object.keys(SIZES))('banner in %s', (format) => {
     expect(first.asset.path).toBe(`assets/bg-${format}.png`);
     expect(first.size).toEqual(SIZES[format]);
     expect(first.transform).toMatchObject({ x: 0, y: 0 });
+  });
+
+  it('says which background is missing, by its path, and draws the rest on paper', () => {
+    // TYTO-605: `productBanner` asks for the background through `requiredImage`, so a format
+    // whose file was left out reports `W_TEMPLATE_FILE_MISSING` instead of a silent blank.
+    const empty: TemplateFiles = { svg: () => undefined, image: () => undefined };
+    const { frame, reports } = render(PREFEITURA, format, proportional, noBrandKit, empty);
+
+    expect(reports).toEqual([{ code: 'W_TEMPLATE_FILE_MISSING', path: `assets/bg-${format}.png` }]);
+    expect(frame.children.some((child) => child.kind === 'image')).toBe(false);
+    expect(titleOf(frame).name).toBe('titulo');
   });
 
   it('draws the placeholder logo in the box the painted-out logo took, over the background', () => {
