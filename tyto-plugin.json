@@ -1,7 +1,7 @@
 {
   "name": "banner",
   "version": "1.1.0",
-  "engine": ">=0.14",
+  "engine": ">=0.21",
   "contributes": ["template-pack"],
   "permissions": ["font:CircularXX"]
 }
